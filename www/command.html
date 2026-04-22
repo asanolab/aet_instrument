@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap-theme.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+  <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+
+  <script src="https://static.robotwebtools.org/EventEmitter2/current/eventemitter2.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/roslib@1/build/roslib.min.js"></script>
+
+  <script>
+  // Connecting to ROS
+  // -----------------
+  var ros = new ROSLIB.Ros();
+
+  // Create a connection to the rosbridge WebSocket server.
+  ros.connect('ws://localhost:9090');
+
+  //Subscribing to a Topic
+  //----------------------
+
+  // We first create a Topic object with details of the topic's name
+  // and message type. Note that we can call publish or subscribe on the same topic object.
+  var cmd = new ROSLIB.Topic({
+    ros : ros,
+    name : '/dielectrometer_cmd',
+    messageType : 'aet_instrument/Dielectrometer'
+  });
+
+  $(document).ready(function () {
+   $("#button-bm10").click(function() {
+     var msg = new ROSLIB.Message({
+       cmd_id : 0,
+       f : 0,
+       g : 0.0,
+       t : 0.0,
+       switch : true,
+       name : "test",
+       file : "test",
+     });
+     cmd.publish(msg);
+     console.log("publishing...");
+     $(this).button('reset');
+   });
+   $("#button-bm28").click(function() {
+     var msg = new ROSLIB.Message({
+       cmd_id : 1,
+       f : 0,
+       g : 0.0,
+       t : 0.0,
+       switch : true,
+       name : "test",
+       file : "test",
+     });
+     cmd.publish(msg);
+     console.log("publishing...");
+     $(this).button('reset');
+   });
+   $("#button-bm40").click(function() {
+     var msg = new ROSLIB.Message({
+       cmd_id : 2,
+       f : 0,
+       g : 0.0,
+       t : 0.0,
+       switch : true,
+       name : "test",
+       file : "test",
+     });
+     cmd.publish(msg);
+     console.log("publishing...");
+     $(this).button('reset');
+   });
+   $("#button-tm10").click(function() {
+     var msg = new ROSLIB.Message({
+       cmd_id : 3,
+       f : 0,
+       g : 0.0,
+       t : 0.0,
+       switch : true,
+       name : "test",
+       file : "test",
+     });
+     cmd.publish(msg);
+     console.log("publishing...");
+     $(this).button('reset');
+   });
+   $("#button-tm28").click(function() {
+     var msg = new ROSLIB.Message({
+       cmd_id : 4,
+       f : 0,
+       g : 0.0,
+       t : 0.0,
+       switch : true,
+       name : "test",
+       file : "test",
+     });
+     cmd.publish(msg);
+     console.log("publishing...");
+     $(this).button('reset');
+   });
+   $("#button-tm40").click(function() {
+     var msg = new ROSLIB.Message({
+       cmd_id : 5,
+       f : 0,
+       g : 0.0,
+       t : 0.0,
+       switch : true,
+       name : "test",
+       file : "test",
+     });
+     cmd.publish(msg);
+     console.log("publishing...");
+     $(this).button('reset');
+   });
+  });
+  </script>
+</head>
+
+<body>
+  <h1></h1>
+  <div id="modal" class="container">
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        Dielectrometer control panel
+      </div>
+
+      <div class="panel-body">
+        <button type="button" id="button-bm10"  data-publishing-text="Publishing..." class="btn btn-default" autocomplete="off" > Blank measure 10GHz</button>
+        <button type="button" id="button-bm28"  data-publishing-text="Publishing..." class="btn btn-default" autocomplete="off" > Blank measure 28GHz</button>
+        <button type="button" id="button-bm40"  data-publishing-text="Publishing..." class="btn btn-default" autocomplete="off" > Blank measure 40GHz</button>
+        <p> </p>
+        <button type="button" id="button-tm10"  data-publishing-text="Publishing..." class="btn btn-default" autocomplete="off" > Target measure 10GHz</button>
+        <button type="button" id="button-tm28"  data-publishing-text="Publishing..." class="btn btn-default" autocomplete="off" > Target measure 28GHz</button>
+        <button type="button" id="button-tm40"  data-publishing-text="Publishing..." class="btn btn-default" autocomplete="off" > Target measure 40GHz</button>
+        <p> <br> <br> </p>
+        <p> See the following topic for check </p>
+        <ul>
+          <li><tt>rostopic echo /dielectrometer_cmd</tt></li>
+        </ul>
+      </div>
+    </div>
+</body>
+</html>

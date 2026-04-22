@@ -1,0 +1,8 @@
+<?xml version="1.0" ?>
+
+<launch>
+  <include file="$(find roswww)/launch/roswww.launch" >
+    <arg name="webpath" value="www" />
+  </include>
+  <include file="$(find rosbridge_server)/launch/rosbridge_websocket.launch" />
+</launch>
