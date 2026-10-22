@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
+from subprocess import run
+import time
 import roslibpy
 import rospy
-#from std_msgs.msg import Int8
 from aet_instrument.msg import Dielectrometer
 
 # command memo
@@ -22,54 +23,59 @@ from aet_instrument.msg import Dielectrometer
 
 def execute(msg):
     exe = "/mnt/c/Program Files (x86)/DielectricCalculator/DielectricCalculator.exe"
-    do_id = msg.do_id
+    msg_do_id = msg['do_id']
+    msg_f     = msg['f']
+    msg_g     = msg['g']
+    msg_t     = msg['t']
+    msg_sw    = msg['switch']
+    msg_name  = msg['name']
+    msg_file  = msg['file']
 
-    if(msg.f is None):
+    if(msg_do_id is None):
         arg_f = "-f=0"
     else:
-        arg_f = "-f={}".format(msg.f)
+        arg_f = "-f={}".format(msg_f)
 
-    if(msg.g is None):
+    if(msg_g is None):
         arg_g = "-g=2.5"  # factory default
     else:
-        arg_g = "-g={}".format(msg.g)
+        arg_g = "-g={}".format(msg_g)
 
-    if(msg.t is None):
+    if(msg_t is None):
         arg_t = "-t=0.3"
     else:
-        arg_t = "-t={}".format(msg.t)
+        arg_t = "-t={}".format(msg_t)
 
     arg_sw = "-switch=true"  # always true
 
-    if(msg.name is None):
+    if(msg_name is None):
         arg_name = "test_sample"
     else:
-        arg_name = "-name={}".format(msg.name)
+        arg_name = "-name={}".format(msg_name)
     # arg_name = "-name=polyethy_10G"
 
     # Note for arg_file:
     # - /mnt/c/.. cannot be used in the measurement software
-    if(msg.file is None):
+    if(msg_file is None):
         arg_file = "test.csv"
     else:
-        arg_file = "-file={}".format(msg.file)
-    #arg_file = "-file=C:/Users/test/Desktop/asano/20230728.csv"
+        arg_file = "-file={}".format(msg_file)
 
     #rospy.loginfo("[DIELECTROMETER] recieved parameters. do_id:%d, f:%d, g:%f, t:%f, switch:%d, name:%s, file:%s", do_id, arg_f, arg_g, arg_t, arg_sw, arg_name, arg_file)
 
     # measure blank
-    if(do_id == 0):
-        rospy.loginfo("[DIELECTROMETER][measureblank] do_id:%d, f:%d, switch:%d", msg.do_id, msg.f, msg.switch)
+    if(msg_do_id == 0):
+        rospy.loginfo("[DIELECTROMETER][measureblank] do_id:%d, f:%d, switch:%d", msg_do_id, msg_f, msg_sw)
         arg_do = "-domeasureblank"
         run([exe, arg_f, arg_sw, arg_do])
     # measure target
-    elif(do_id == 1):
-        rospy.loginfo("[DIELECTROMETER][measuretarget] do_id:%d, f:%d, g:%f, t:%f, switch:%d", msg.do_id, msg.f, msg.g, msg.t, msg.switch)
+    elif(msg_do_id == 1):
+        rospy.loginfo("[DIELECTROMETER][measuretarget] do_id:%d, f:%d, g:%f, t:%f, switch:%d", msg_do_id, msg_f, msg_g, msg_t, msg_sw)
         arg_do = "-domeasuretarget"
         run([exe, arg_f, arg_g, arg_t, arg_sw, arg_do])
     # calc and save
     elif(do_id == 2):
-        rospy.loginfo("[DIELECTROMETER][calc] do_id:%d, f:%d, t:%f, switch:%d, name:%s, file:%s", msg.do_id, msg.f, msg.t, msg.switch, msg.name, msg.file)
+        rospy.loginfo("[DIELECTROMETER][calc] do_id:%d, f:%d, t:%f, switch:%d, name:%s, file:%s", msg_do_id, msg_f, msg_t, msg_sw, msg_name, msg_file)
         arg_do   = "-docalc"
         run([exe, arg_f, arg_t, arg_sw, arg_do, arg_name, arg_file])
     else:
@@ -78,18 +84,12 @@ def execute(msg):
 
 
 def callback(msg):
-    rospy.loginfo("[DIELECTROMETER] recieved do_id: %d", msg.do_id)
-    rospy.loginfo("[DIELECTROMETER] recieved t    : %d", msg.t)
-    # rospy.loginfo("[DIELECTROMETER] recieved command. do_id:%d, f:%d, g:%f, t:%f, switch:%d, name:%s, file:%s", msg.do_id, msg.f, msg.g, msg.t, msg.switch, msg.name, msg.file)  # for debug
+    msg_do_id = msg['do_id']
+    msg_t     = msg['t']
+    rospy.loginfo("[DIELECTROMETER] recieved do_id: %d", msg_do_id)
+    rospy.loginfo("[DIELECTROMETER] recieved t    : %d", msg_t)
+    # rospy.loginfo("[DIELECTROMETER] recieved command. do_id:%d, f:%d, g:%f, t:%f, switch:%d, name:%s, file:%s", msg_do_id, msg_f, msg_g, msg_t, msg_sw, msg_name, msg_file)  # for debug
     execute(msg)
-
-
-#def subscriber():
-#    rospy.init_node('subscriber', anonymous=True)
-#    #rospy.Subscriber("dielectrometer_cmd", Int8, callback)
-#    rospy.Subscriber("dielectrometer_cmd", Dielectrometer, callback)
-#
-#    rospy.spin()
 
 
 # ros
@@ -117,6 +117,3 @@ finally:
     topic.unsubscribe()
     ros.terminate()
     print('[roslibpy] Disconnected from ROS.')
-
-#if __name__ == "__main__":
-#    subscriber()
