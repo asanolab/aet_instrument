@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-from subprocess import run
+import roslibpy
 import rospy
-from std_msgs.msg import Int8
+#from std_msgs.msg import Int8
 from aet_instrument.msg import Dielectrometer
 
 # command memo
@@ -84,13 +84,39 @@ def callback(msg):
     execute(msg)
 
 
-def subscriber():
-    rospy.init_node('subscriber', anonymous=True)
-    #rospy.Subscriber("dielectrometer_cmd", Int8, callback)
-    rospy.Subscriber("dielectrometer_cmd", Dielectrometer, callback)
+#def subscriber():
+#    rospy.init_node('subscriber', anonymous=True)
+#    #rospy.Subscriber("dielectrometer_cmd", Int8, callback)
+#    rospy.Subscriber("dielectrometer_cmd", Dielectrometer, callback)
+#
+#    rospy.spin()
 
-    rospy.spin()
 
+# ros
+client_ip="192.168.0.44"
+client_port=9090
+ros = roslibpy.Ros(host=client_ip, port=client_port)
+ros.run()
 
-if __name__ == "__main__":
-    subscriber()
+topic = roslibpy.Topic(
+    ros,
+    '/dielectrometer_cmd',
+    'aet_instrument/Dielectrometer',
+    throttle_rate=100,  # 100 ms間隔（最大約10 Hz）
+)
+
+topic.subscribe(callback)
+
+try:
+    while ros.is_connected:
+        time.sleep(0.1)  # continue to connect
+except KeyboardInterrupt:
+    print('[roslibpy] Interrupted, shutting down service...')
+    pass
+finally:
+    topic.unsubscribe()
+    ros.terminate()
+    print('[roslibpy] Disconnected from ROS.')
+
+#if __name__ == "__main__":
+#    subscriber()
