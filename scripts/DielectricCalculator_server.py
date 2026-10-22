@@ -74,7 +74,7 @@ def execute(msg):
         arg_do = "-domeasuretarget"
         run([exe, arg_f, arg_g, arg_t, arg_sw, arg_do])
     # calc and save
-    elif(do_id == 2):
+    elif(msg_do_id == 2):
         rospy.loginfo("[DIELECTROMETER][calc] do_id:%d, f:%d, t:%f, switch:%d, name:%s, file:%s", msg_do_id, msg_f, msg_t, msg_sw, msg_name, msg_file)
         arg_do   = "-docalc"
         run([exe, arg_f, arg_t, arg_sw, arg_do, arg_name, arg_file])
