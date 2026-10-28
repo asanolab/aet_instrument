@@ -1,0 +1,4 @@
+<?xml version="1.0" ?>
+<launch>
+  <node name="dielectric_calculator_server" pkg="aet_instrument" type="dielectric_calculator_server.py" />
+</launch>
